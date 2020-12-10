@@ -36,12 +36,12 @@ app.post("/auth", function (request, response) {
   var password = request.body.password;
   if (username && password) {
     connection.query(
-      "SELECT * FROM accounts WHERE username = $1 AND password = $2",
+      "SELECT * FROM users WHERE username = $1 AND password = $2",
       [username, password],
       function (error, results, fields) {
         console.log("error", error);
         console.log("results", results);
-        if (results.length > 0) {
+        if (results.rows.length > 0) {
           request.session.loggedin = true;
           request.session.username = username;
           response.redirect("/home");
@@ -53,6 +53,34 @@ app.post("/auth", function (request, response) {
     );
   } else {
     response.send("Please enter Username and Password!");
+    response.end();
+  }
+});
+
+app.post("/register", function (request, response) {
+  var username = request.body.username;
+  var password = request.body.password;
+  var firstname = request.body.password;
+  var lastname = request.body.password;
+  var email = request.body.password;
+  const qs =
+    "INSERT INTO users(username, email, firstname, lastname, password) VALUES($1, $2, $3, $4, $5) RETURNING *";
+  const values = [username, email, firstname, lastname, password];
+  if (username && password && email && firstname && lastname) {
+    connection.query(qs, values, function (error, results, fields) {
+      console.log("error", error);
+      console.log("results", results);
+      if (results.rows.length > 0) {
+        request.session.loggedin = true;
+        request.session.username = username;
+        response.redirect("/");
+      } else {
+        response.send("Error occur while registering! Contact admin.");
+      }
+      response.end();
+    });
+  } else {
+    response.send("Please enter complete details!");
     response.end();
   }
 });
