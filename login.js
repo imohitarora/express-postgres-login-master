@@ -85,6 +85,16 @@ app.post("/register", function (request, response) {
   }
 });
 
+app.get("/users", function (request, response) {
+  const qs = "SELECT * FROM users";
+  connection.query(qs, function (error, results, fields) {
+    console.log("error", error);
+    console.log("results", results);
+    response.send(results.rows);
+    response.end();
+  });
+});
+
 app.get("/home", function (request, response) {
   if (request.session.loggedin) {
     response.send("Welcome back, " + request.session.username + "!");
