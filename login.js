@@ -27,14 +27,20 @@ app.get("/", function (request, response) {
   response.sendFile(path.join(__dirname + "/login.html"));
 });
 
+app.get("/register", function (request, response) {
+  response.sendFile(path.join(__dirname + "/register.html"));
+});
+
 app.post("/auth", function (request, response) {
   var username = request.body.username;
   var password = request.body.password;
   if (username && password) {
     connection.query(
-      "SELECT * FROM accounts WHERE username = ? AND password = ?",
+      "SELECT * FROM accounts WHERE username = $1 AND password = $2",
       [username, password],
       function (error, results, fields) {
+        console.log("error", error);
+        console.log("results", results);
         if (results.length > 0) {
           request.session.loggedin = true;
           request.session.username = username;
